@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="mapper.BrandMapper">
+    <resultMap id="brandResultMap" type="pojo.Brand">
+        <result column="brand_name" property="brandName"></result>
+        <result column="company_name" property="companyName"></result>
+    </resultMap>
+    <delete id="deleteByIds">
+        delete
+        from tb_brand
+        where id in
+        <foreach collection="ids" item="id" separator="," open="(" close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <!--分页条件查询-->
+    <select id="selectByPageAndCondition" resultMap="brandResultMap">
+        select * from tb_brand
+        <where>
+            <if test="brand.brandName != null and brand.brandName != '' ">
+                and brand_name like #{brand.brandName}
+            </if>
+            <if test="brand.companyName != null and brand.companyName != ''">
+                and company_name like #{ brand.companyName}
+            </if>
+            <if test="brand.status != null ">
+                and status = #{brand.status}
+            </if>
+        </where>
+
+        limit #{begin},#{size}
+    </select>
+    <!--分页条件查询 符合条件的总记录数-->
+    <select id="selectTotalByCondition" resultType="java.lang.Integer">
+        select count(*) from  tb_brand
+        <where>
+            <if test="brandName != null and brandName != '' ">
+                and brand_name like #{brandName}
+            </if>
+            <if test="companyName != null and companyName != ''">
+                and company_name like #{companyName}
+            </if>
+            <if test="status != null ">
+                and status = #{status}
+            </if>
+        </where>
+
+    </select>
+</mapper>

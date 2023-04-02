@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>欢迎注册</title>
+    <link href="css/register.css" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <div class="form-div">
+        <div class="reg-content">
+            <h1>欢迎注册</h1>
+            <span>已有帐号？</span> <a href="login.html">登录</a>
+        </div>
+
+        <form id="reg-form">
+            <table>
+                <tr>
+                    <td>用户名</td>
+                    <td class="inputs">
+                        <input name="username" v-model="formData.username" type="text" id="username"
+                               @blur="checkName">
+                        <br>
+                        <span id="username_err"  class="err_msg" style="color: red"></span>
+                    </td>
+
+                </tr>
+
+                <tr>
+                    <td>密码</td>
+                    <td class="inputs">
+                        <input name="password" v-model="formData.password" type="password" id="password">
+                        <br>
+                        <span id="password_err" class="err_msg" style="display: none">密码格式有误</span>
+                    </td>
+                </tr>
+
+
+                <tr>
+                    <td>验证码</td>
+                    <td class="inputs">
+                        <input name="checkCode" v-model="checkCode" type="text" id="checkCode">
+                        <img id="checkCodeImg" alt="验证码" @click="changeImg"
+                             src="http://localhost:8080/brand.elliotoplit.top/checkCodeServlet">
+                        <a href="#" @click="changeImg" id="changeImg">看不清？</a>
+                    </td>
+                </tr>
+
+            </table>
+
+            <div class="buttons">
+                <input value="注 册" type="button" @click="submitForm" id="reg_btn">
+            </div>
+            <br class="clear">
+        </form>
+
+    </div>
+</div>
+
+
+<script src="js/vue.js"></script>
+<script src="js/axios-0.18.0.js"></script>
+<script src="element-ui/lib/index.js"></script>
+<link rel="stylesheet" href="element-ui/lib/theme-chalk/index.css">
+<script>
+    new Vue({
+        el: "#app",
+        data() {
+            return {
+                //用户填写的账号密码
+                formData: {
+                    username: '',
+                    password: '',
+                },
+                //用户输入的验证码
+                checkCode: '',
+                //用户名报错信息
+                username_err: ''
+            }
+        },
+        methods: {
+            //检查用户名可用性
+            checkName() {
+                axios({
+                    method: "GET",
+                    url: "http://localhost:8080/brand.elliotoplit.top/user/username?username="+this.formData.username,
+                }).then(resp => {
+                    if (resp.data == "0") {
+                        //已被注册 发出提示
+                        this.$message({
+                            showClose: true,
+                            message: '用户名已被注册，请更换用户名！',
+                            type: 'warning'
+                        });
+                    }
+                })
+            },
+            //提交注册
+            submitForm() {
+                axios({
+                    method: "POST",
+                    url: "http://localhost:8080/brand.elliotoplit.top/user/register?checkCode=" + this.checkCode,
+                    data: this.formData
+                }).then(resp=>{
+                    if(resp.data == "codeErr"){
+                        this.$message({
+                            showClose: true,
+                            message: '验证码错误！',
+                            type: 'error'
+                        });
+                        this.changeImg();
+                    }else if(resp.data == "success"){
+                        this.$message({
+                            showClose: true,
+                            message: '注册成功，请登录',
+                            type: 'success'
+                        });//注册成功跳转登录界面 回调函数 暂停2000毫秒
+                        setTimeout(function () {
+                            window.location = "http://localhost:8080/brand.elliotoplit.top/login.html"
+                        },2000)
+
+                    }else{
+                        this.$message({
+                            showClose: true,
+                            message: '用户名已被注册，请重试',
+                            type: 'error'
+                        });
+                        this.changeImg();
+                    }
+                })
+            },
+            //更换验证码
+            changeImg(){
+                document.getElementById("checkCodeImg").src = "/brand.elliotoplit.top/checkCodeServlet?" + new Date().getMilliseconds();
+            }
+
+        }
+    })
+
+
+</script>
+</body>
+</html>
