@@ -1,0 +1,16 @@
+service\impl\UserServiceImpl.class
+web\BrandServlet.class
+mapper\BrandMapper.class
+pojo\Brand.class
+service\UserService.class
+web\filter\LoginFilter.class
+web\checkCodeServlet.class
+pojo\User.class
+mapper\UserMapper.class
+web\UserServlet.class
+pojo\PageBean.class
+util\sqlSessionFactoryUtils.class
+service\BrandService.class
+web\BaseServlet.class
+service\impl\BrandServiceImpl.class
+util\CheckCodeUtil.class
